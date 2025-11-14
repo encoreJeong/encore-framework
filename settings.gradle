@@ -1,1 +1,4 @@
 rootProject.name = 'encore-framework'
+
+include("sample-app")
+project(":sample-app").projectDir = file("sample-app")
