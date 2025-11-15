@@ -1,17 +1,17 @@
-package com.example.app.controller;
+package com.example.app.controller.defaulthandler;
 
 import com.encorejeong.encoreframework.web.handler.Controller;
 import com.encorejeong.encoreframework.web.request.vo.RequestParams;
-import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 public class SampleGETController implements Controller {
 
     @Override
-    public void handle(RequestParams params, HttpServletResponse response) throws IOException {
-        response.setContentType("text/plain");
+    public String handle(RequestParams params) throws IOException {
+
         StringBuilder strResponse = new StringBuilder();
         params.getKeys().forEach(key -> strResponse.append(key).append("=").append(params.getValue(key)).append("\n"));
-        response.getWriter().write("response by GET /sample controller!\n" + strResponse);
+
+        return "response by GET /sample controller!\n" + strResponse;
     }
 }
