@@ -5,7 +5,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-public class SampleController implements Controller {
+public class SampleGETController implements Controller {
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setContentType("text/plain");

@@ -4,7 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 
-public class RequestMappingImpl implements RequestMapping{
+public class UrlMapping implements RequestMapping{
 
     private final Map<String, Controller> handlers = new HashMap<>();
 
