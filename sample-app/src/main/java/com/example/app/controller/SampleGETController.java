@@ -1,14 +1,17 @@
 package com.example.app.controller;
 
 import com.encorejeong.encoreframework.web.handler.Controller;
-import jakarta.servlet.http.HttpServletRequest;
+import com.encorejeong.encoreframework.web.request.vo.RequestParams;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 public class SampleGETController implements Controller {
+
     @Override
-    public void handle(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public void handle(RequestParams params, HttpServletResponse response) throws IOException {
         response.setContentType("text/plain");
-        response.getWriter().write("Hello Encore Framework!");
+        StringBuilder strResponse = new StringBuilder();
+        params.getKeys().forEach(key -> strResponse.append(key).append("=").append(params.getValue(key)).append("\n"));
+        response.getWriter().write("response by GET /sample controller!\n" + strResponse);
     }
 }
