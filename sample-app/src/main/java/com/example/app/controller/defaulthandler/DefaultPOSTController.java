@@ -4,7 +4,7 @@ import com.encorejeong.encoreframework.web.handler.Controller;
 import com.encorejeong.encoreframework.web.request.vo.RequestParams;
 import java.io.IOException;
 
-public class SamplePOSTController implements Controller {
+public class DefaultPOSTController implements Controller {
 
     @Override
     public String handle(RequestParams params) throws IOException {

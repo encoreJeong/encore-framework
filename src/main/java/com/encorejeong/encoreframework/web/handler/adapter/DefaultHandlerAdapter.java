@@ -1,7 +1,7 @@
 package com.encorejeong.encoreframework.web.handler.adapter;
 
 import com.encorejeong.encoreframework.web.handler.Controller;
-import com.encorejeong.encoreframework.web.request.QueryParameterParser;
+import com.encorejeong.encoreframework.web.request.ParameterParser;
 import com.encorejeong.encoreframework.web.request.vo.RequestParams;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -16,7 +16,7 @@ public class DefaultHandlerAdapter implements HandlerAdapter {
     public void handle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         Controller controller = (Controller) handler;
 
-        RequestParams params = RequestParams.of(QueryParameterParser.getParameterMap(request));
+        RequestParams params = RequestParams.of(ParameterParser.getParameterMap(request));
 
         response.setContentType("text/plain");
 

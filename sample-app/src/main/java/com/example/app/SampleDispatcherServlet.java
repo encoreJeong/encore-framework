@@ -5,26 +5,30 @@ import com.encorejeong.encoreframework.web.handler.adapter.DefaultHandlerAdapter
 import com.encorejeong.encoreframework.web.handler.adapter.HandlerAdapter;
 import com.encorejeong.encoreframework.web.handler.adapter.RestHandlerAdapter;
 import com.encorejeong.encoreframework.web.handler.mapping.HandlerMapping;
+import com.encorejeong.encoreframework.web.handler.mapping.RestHandlerMapping;
 import com.encorejeong.encoreframework.web.handler.mapping.UrlWithMethodMapping;
-import com.encorejeong.encoreframework.web.handler.vo.UrlWithHttpMethod;
-import com.example.app.controller.defaulthandler.SampleGETController;
-import com.example.app.controller.defaulthandler.SamplePOSTController;
-import com.example.app.controller.resthandler.SampleGETRestController;
-import com.example.app.controller.resthandler.SamplePOSTRestController;
+import com.example.app.controller.defaulthandler.DefaultGETController;
+import com.example.app.controller.defaulthandler.DefaultGETRestController;
+import com.example.app.controller.resthandler.RestGETController;
+import com.example.app.controller.resthandler.RestPOSTController;
 import java.util.List;
 
 public class SampleDispatcherServlet extends DispatcherServlet {
 
     @Override
     protected List<HandlerMapping> initHandlerMappings() {
-        UrlWithMethodMapping requestMapping = new UrlWithMethodMapping();
-        requestMapping.register(new UrlWithHttpMethod("GET","/sample"), new SampleGETController());
-        requestMapping.register(new UrlWithHttpMethod("POST","/sample"), new SamplePOSTController());
 
-        requestMapping.register(new UrlWithHttpMethod("GET","/rest/sample"), new SampleGETRestController());
-        requestMapping.register(new UrlWithHttpMethod("POST","/rest/sample"), new SamplePOSTRestController());
+        //Mapping by HTTP Method, Path Variable, Query Parameter, Url
+        RestHandlerMapping restHandlerMapping = new RestHandlerMapping();
+        restHandlerMapping.register("GET", "/users/{userId}", new RestGETController());
+        restHandlerMapping.register("POST", "/users/{userId}", new RestPOSTController());
 
-        return List.of(requestMapping);
+        //Mapping by HTTP Method, Query Parameter, Url
+        UrlWithMethodMapping urlWithMethodMapping = new UrlWithMethodMapping();
+        urlWithMethodMapping.register("GET", "/users", new DefaultGETController());
+        urlWithMethodMapping.register("GET", "/rest/users", new DefaultGETRestController());
+
+        return List.of(restHandlerMapping, urlWithMethodMapping);
     }
 
     @Override

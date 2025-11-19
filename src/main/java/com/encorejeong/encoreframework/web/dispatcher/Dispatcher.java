@@ -6,8 +6,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Dispatcher {
+
+    private static final Logger log = LoggerFactory.getLogger(Dispatcher.class);
 
     private final List<HandlerAdapter> handlerAdapters;
     private final List<HandlerMapping> handlerMappings;
@@ -24,6 +28,7 @@ public class Dispatcher {
             Object handler = getHandler(request);
             if (handler == null) {
                 response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                log.error("No handler found for {}", request.getRequestURI());
                 return;
             }
 
@@ -32,6 +37,7 @@ public class Dispatcher {
 
         } catch (Exception e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            log.error(e.getMessage(), e);
         }
     }
 

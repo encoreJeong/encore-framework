@@ -1,14 +1,14 @@
-package com.example.app.controller.resthandler;
+package com.example.app.controller.defaulthandler;
 
 import com.encorejeong.encoreframework.web.handler.RestController;
 import com.encorejeong.encoreframework.web.request.vo.RequestParams;
 import java.io.IOException;
 
-public class SamplePOSTRestController implements RestController {
+public class DefaultGETRestController implements RestController {
 
     @Override
     public Object handle(RequestParams params) throws IOException {
-        return new SampleUser(1,"postUser");
+        return new SampleUser(1, "getUser");
     }
 
     private class SampleUser {
@@ -29,4 +29,5 @@ public class SamplePOSTRestController implements RestController {
             return name;
         }
     }
+
 }
