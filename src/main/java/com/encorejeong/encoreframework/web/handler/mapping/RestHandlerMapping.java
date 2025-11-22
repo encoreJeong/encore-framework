@@ -7,12 +7,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class RestHandlerMapping implements HandlerMapping {
-
-    private static final Logger log = LoggerFactory.getLogger(RestHandlerMapping.class);
 
     private final Map<HandlerKey, Object> handlers = new HashMap<>();
 
@@ -33,11 +29,12 @@ public class RestHandlerMapping implements HandlerMapping {
     }
 
     private Object mappingHandler(HttpServletRequest request, String path) {
+
         for (Map.Entry<HandlerKey, Object> entry : handlers.entrySet()) {
             HandlerKey handlerKey = entry.getKey();
-            Matcher matcher = handlerKey.pattern().matcher(path);
+            Matcher matcher = handlerKey.pathPattern().matcher(path);
 
-            if (matcher.matches()) {
+            if (matcher.matches() && isMethodMatches(request, handlerKey)) {
 
                 parsePathVariables(request, handlerKey, matcher);
 
@@ -47,11 +44,15 @@ public class RestHandlerMapping implements HandlerMapping {
         return null;
     }
 
+    private static boolean isMethodMatches(HttpServletRequest request, HandlerKey handlerKey) {
+        return handlerKey.method().equals(HttpMethod.valueOf(request.getMethod()));
+    }
+
     private static void parsePathVariables(HttpServletRequest request, HandlerKey handlerKey, Matcher matcher) {
         Map<String, String> pathVars = new HashMap<>();
 
-        for (int i = 0; i < handlerKey.pattern().getVariableNames().size(); i++) {
-            String name = handlerKey.pattern().getVariableNames().get(i);
+        for (int i = 0; i < handlerKey.pathPattern().getVariableNames().size(); i++) {
+            String name = handlerKey.pathPattern().getVariableNames().get(i);
             String value = matcher.group(i + 1);
             pathVars.put(name, value);
         }

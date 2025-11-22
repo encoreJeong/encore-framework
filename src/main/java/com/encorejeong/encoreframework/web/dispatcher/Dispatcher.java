@@ -28,7 +28,7 @@ public class Dispatcher {
             Object handler = getHandler(request);
             if (handler == null) {
                 response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-                log.error("No handler found for {}", request.getRequestURI());
+                log.error("No handler found for {} {}",request.getMethod(), request.getRequestURI());
                 return;
             }
 
