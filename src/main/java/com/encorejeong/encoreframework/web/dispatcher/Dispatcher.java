@@ -40,6 +40,10 @@ public class Dispatcher {
             View view = getView(modelAndView.getViewName());
             view.render(modelAndView, response);
 
+        } catch (IllegalArgumentException e) {
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            log.error(e.getMessage(), e);
+
         } catch (Exception e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             log.error(e.getMessage(), e);
