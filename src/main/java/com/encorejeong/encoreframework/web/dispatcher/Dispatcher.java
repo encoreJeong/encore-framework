@@ -2,6 +2,9 @@ package com.encorejeong.encoreframework.web.dispatcher;
 
 import com.encorejeong.encoreframework.web.handler.adapter.HandlerAdapter;
 import com.encorejeong.encoreframework.web.handler.mapping.HandlerMapping;
+import com.encorejeong.encoreframework.web.view.ModelAndView;
+import com.encorejeong.encoreframework.web.view.View;
+import com.encorejeong.encoreframework.web.view.ViewResolver;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -15,10 +18,13 @@ public class Dispatcher {
 
     private final List<HandlerAdapter> handlerAdapters;
     private final List<HandlerMapping> handlerMappings;
+    private final List<ViewResolver> viewResolvers;
 
-    public Dispatcher(List<HandlerAdapter> handlerAdapters, List<HandlerMapping> handlerMappings) {
+    public Dispatcher(List<HandlerAdapter> handlerAdapters, List<HandlerMapping> handlerMappings,
+                      List<ViewResolver> viewResolvers) {
         this.handlerAdapters = handlerAdapters;
         this.handlerMappings = handlerMappings;
+        this.viewResolvers = viewResolvers;
     }
 
     public void handle(HttpServletRequest request,
@@ -26,14 +32,17 @@ public class Dispatcher {
         try {
 
             Object handler = getHandler(request);
-            if (handler == null) {
-                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-                log.error("No handler found for {} {}",request.getMethod(), request.getRequestURI());
-                return;
-            }
 
             HandlerAdapter adapter = getHandlerAdapter(handler);
-            adapter.handle(request, response, handler);
+
+            ModelAndView modelAndView = adapter.handle(request, response, handler);
+
+            View view = getView(modelAndView.getViewName());
+            view.render(modelAndView, response);
+
+        } catch (IllegalArgumentException e) {
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            log.error(e.getMessage(), e);
 
         } catch (Exception e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -48,7 +57,7 @@ public class Dispatcher {
                 return handler;
             }
         }
-        return null;
+        throw new IllegalArgumentException("No handler found for " + request.getMethod() + " " + request.getRequestURI());
     }
 
     private HandlerAdapter getHandlerAdapter(Object handler) {
@@ -57,6 +66,15 @@ public class Dispatcher {
                 return adapter;
             }
         }
-        throw new IllegalArgumentException("지원되는 HandlerAdapter가 없습니다. handler=" + handler);
+        throw new IllegalArgumentException("No handlerAdapter found for " + handler);
+    }
+
+    private View getView(String viewName) {
+        for (ViewResolver viewResolver : viewResolvers) {
+            if (viewResolver.supports(viewName)) {
+                return viewResolver.resolveViewName(viewName);
+            }
+        }
+        throw new IllegalArgumentException("No viewResolver found for " + viewName);
     }
 }

@@ -3,9 +3,12 @@ package com.encorejeong.encoreframework.web.handler.adapter;
 import com.encorejeong.encoreframework.web.handler.RestController;
 import com.encorejeong.encoreframework.web.request.ParameterParser;
 import com.encorejeong.encoreframework.web.request.vo.RequestParams;
+import com.encorejeong.encoreframework.web.view.ModelAndView;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.HashMap;
+import java.util.Map;
 
 public class RestHandlerAdapter implements HandlerAdapter {
 
@@ -17,16 +20,16 @@ public class RestHandlerAdapter implements HandlerAdapter {
     }
 
     @Override
-    public void handle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+    public ModelAndView handle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         RestController controller = (RestController) handler;
 
         RequestParams params = RequestParams.of(ParameterParser.getParameterMap(request));
+        Map<String, Object> model = new HashMap<>();
 
-        response.setContentType("application/json;charset=UTF-8");
+        String viewName = controller.handle(params, model);
+        ModelAndView modelAndView = new ModelAndView(viewName);
+        modelAndView.setModel(model);
 
-        Object result = controller.handle(params);
-        String json = mapper.writeValueAsString(result);
-
-        response.getWriter().write(json);
+        return modelAndView;
     }
 }
