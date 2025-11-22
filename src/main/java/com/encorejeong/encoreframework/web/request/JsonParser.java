@@ -18,7 +18,7 @@ public class JsonParser implements BodyParser {
     @Override
     public boolean supports(String contentType) {
         if(contentType == null) {return false;}
-        return contentType.equals(CONTENT_TYPE_JSON);
+        return contentType.contains(CONTENT_TYPE_JSON);
     }
 
     @Override

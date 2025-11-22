@@ -4,7 +4,6 @@ import com.encorejeong.encoreframework.web.handler.RestController;
 import com.encorejeong.encoreframework.web.request.BodyParser;
 import com.encorejeong.encoreframework.web.request.JsonParser;
 import com.encorejeong.encoreframework.web.request.ParameterParser;
-import com.encorejeong.encoreframework.web.request.vo.JsonBody;
 import com.encorejeong.encoreframework.web.request.vo.RequestBody;
 import com.encorejeong.encoreframework.web.request.vo.RequestParams;
 import com.encorejeong.encoreframework.web.view.ModelAndView;
