@@ -1,26 +1,62 @@
 package com.encorejeong.encoreframework.web.dispatcher;
 
-import com.encorejeong.encoreframework.web.handler.Controller;
-import com.encorejeong.encoreframework.web.handler.RequestMapping;
+import com.encorejeong.encoreframework.web.handler.adapter.HandlerAdapter;
+import com.encorejeong.encoreframework.web.handler.mapping.HandlerMapping;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Dispatcher {
 
-    private final RequestMapping requestMapping;
+    private static final Logger log = LoggerFactory.getLogger(Dispatcher.class);
 
-    public Dispatcher(RequestMapping requestMapping) {
-        this.requestMapping = requestMapping;
+    private final List<HandlerAdapter> handlerAdapters;
+    private final List<HandlerMapping> handlerMappings;
+
+    public Dispatcher(List<HandlerAdapter> handlerAdapters, List<HandlerMapping> handlerMappings) {
+        this.handlerAdapters = handlerAdapters;
+        this.handlerMappings = handlerMappings;
     }
 
-    public void handle(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        Controller controller = requestMapping.getController(request);
+    public void handle(HttpServletRequest request,
+                       HttpServletResponse response) throws IOException {
+        try {
 
-        if(controller == null) {
-            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            Object handler = getHandler(request);
+            if (handler == null) {
+                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                log.error("No handler found for {} {}",request.getMethod(), request.getRequestURI());
+                return;
+            }
+
+            HandlerAdapter adapter = getHandlerAdapter(handler);
+            adapter.handle(request, response, handler);
+
+        } catch (Exception e) {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            log.error(e.getMessage(), e);
         }
+    }
 
-        controller.handle(request, response);
+    private Object getHandler(HttpServletRequest request) {
+        for (HandlerMapping mapping : handlerMappings) {
+            Object handler = mapping.getHandler(request);
+            if (handler != null) {
+                return handler;
+            }
+        }
+        return null;
+    }
+
+    private HandlerAdapter getHandlerAdapter(Object handler) {
+        for (HandlerAdapter adapter : handlerAdapters) {
+            if (adapter.supports(handler)) {
+                return adapter;
+            }
+        }
+        throw new IllegalArgumentException("지원되는 HandlerAdapter가 없습니다. handler=" + handler);
     }
 }
