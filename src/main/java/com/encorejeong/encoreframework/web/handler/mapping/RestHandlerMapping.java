@@ -23,19 +23,11 @@ public class RestHandlerMapping implements HandlerMapping {
     @Override
     public Object getHandler(HttpServletRequest request) {
 
-        String path = request.getRequestURI();
-
-        return mappingHandler(request, path);
-    }
-
-    private Object mappingHandler(HttpServletRequest request, String path) {
-
         for (Map.Entry<HandlerKey, Object> entry : handlers.entrySet()) {
             HandlerKey handlerKey = entry.getKey();
-            Matcher matcher = handlerKey.pathPattern().matcher(path);
+            Matcher matcher = handlerKey.pathPattern().matcher(request.getRequestURI());
 
             if (matcher.matches() && isMethodMatches(request, handlerKey)) {
-
                 parsePathVariables(request, handlerKey, matcher);
 
                 return entry.getValue();
