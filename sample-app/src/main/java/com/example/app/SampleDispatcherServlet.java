@@ -7,6 +7,9 @@ import com.encorejeong.encoreframework.web.handler.adapter.RestHandlerAdapter;
 import com.encorejeong.encoreframework.web.handler.mapping.HandlerMapping;
 import com.encorejeong.encoreframework.web.handler.mapping.RestHandlerMapping;
 import com.encorejeong.encoreframework.web.handler.mapping.UrlWithMethodMapping;
+import com.encorejeong.encoreframework.web.view.ViewResolver;
+import com.encorejeong.encoreframework.web.view.json.JsonViewResolver;
+import com.encorejeong.encoreframework.web.view.text.PlainTextViewResolver;
 import com.example.app.controller.defaulthandler.DefaultGETController;
 import com.example.app.controller.defaulthandler.DefaultGETRestController;
 import com.example.app.controller.resthandler.RestGETController;
@@ -36,6 +39,14 @@ public class SampleDispatcherServlet extends DispatcherServlet {
         return List.of(
                 new DefaultHandlerAdapter(),
                 new RestHandlerAdapter()
+        );
+    }
+
+    @Override
+    protected List<ViewResolver> initViewResolvers() {
+        return List.of(
+                new JsonViewResolver(),
+                new PlainTextViewResolver()
         );
     }
 }

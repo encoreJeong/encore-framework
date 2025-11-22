@@ -3,12 +3,14 @@ package com.example.app.controller.defaulthandler;
 import com.encorejeong.encoreframework.web.handler.RestController;
 import com.encorejeong.encoreframework.web.request.vo.RequestParams;
 import java.io.IOException;
+import java.util.Map;
 
 public class DefaultGETRestController implements RestController {
 
     @Override
-    public Object handle(RequestParams params) throws IOException {
-        return new SampleUser(1, "getUser");
+    public String handle(RequestParams params, Map<String, Object> model) throws IOException {
+        model.put("user", new SampleUser(1, "getUser"));
+        return "jsonView";
     }
 
     private class SampleUser {
