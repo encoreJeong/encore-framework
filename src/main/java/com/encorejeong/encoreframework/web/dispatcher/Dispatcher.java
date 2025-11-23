@@ -1,5 +1,6 @@
 package com.encorejeong.encoreframework.web.dispatcher;
 
+import com.encorejeong.encoreframework.web.Exception.NotFoundException;
 import com.encorejeong.encoreframework.web.handler.adapter.HandlerAdapter;
 import com.encorejeong.encoreframework.web.handler.mapping.HandlerMapping;
 import com.encorejeong.encoreframework.web.view.ModelAndView;
@@ -28,7 +29,7 @@ public class Dispatcher {
     }
 
     public void handle(HttpServletRequest request,
-                       HttpServletResponse response) throws IOException {
+                       HttpServletResponse response) throws Exception {
         try {
 
             Object handler = getHandler(request);
@@ -40,12 +41,8 @@ public class Dispatcher {
             View view = getView(modelAndView.getViewName());
             view.render(modelAndView, response);
 
-        } catch (IllegalArgumentException e) {
+        } catch (NotFoundException e) {
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            log.error(e.getMessage(), e);
-
-        } catch (Exception e) {
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             log.error(e.getMessage(), e);
         }
     }
@@ -57,7 +54,7 @@ public class Dispatcher {
                 return handler;
             }
         }
-        throw new IllegalArgumentException("No handler found for " + request.getMethod() + " " + request.getRequestURI());
+        throw new NotFoundException("No handler found for " + request.getMethod() + " " + request.getRequestURI());
     }
 
     private HandlerAdapter getHandlerAdapter(Object handler) {
@@ -66,7 +63,7 @@ public class Dispatcher {
                 return adapter;
             }
         }
-        throw new IllegalArgumentException("No handlerAdapter found for " + handler);
+        throw new NotFoundException("No handlerAdapter found for " + handler);
     }
 
     private View getView(String viewName) {
@@ -75,6 +72,6 @@ public class Dispatcher {
                 return viewResolver.resolveViewName(viewName);
             }
         }
-        throw new IllegalArgumentException("No viewResolver found for " + viewName);
+        throw new NotFoundException("No viewResolver found for " + viewName);
     }
 }
