@@ -3,10 +3,10 @@ package com.encorejeong.encoreframework.web.dispatcher;
 import com.encorejeong.encoreframework.web.handler.mapping.HandlerMapping;
 import com.encorejeong.encoreframework.web.handler.adapter.HandlerAdapter;
 import com.encorejeong.encoreframework.web.view.ViewResolver;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.util.List;
 
 public abstract class DispatcherServlet extends HttpServlet {
@@ -26,8 +26,11 @@ public abstract class DispatcherServlet extends HttpServlet {
     protected abstract List<ViewResolver> initViewResolvers();
 
     @Override
-    protected void service(HttpServletRequest req, HttpServletResponse resp)
-            throws IOException {
-        dispatcher.handle(req, resp);
+    protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException {
+        try {
+            dispatcher.handle(req, resp);
+        } catch (Exception e) {
+            throw new ServletException(e);
+        }
     }
 }
