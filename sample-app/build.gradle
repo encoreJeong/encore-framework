@@ -1,0 +1,25 @@
+plugins {
+    id "application"
+}
+
+group = 'org.encoreframework'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation project(":")
+    implementation "org.apache.tomcat.embed:tomcat-embed-core:10.1.20"
+
+    runtimeOnly("ch.qos.logback:logback-classic:1.4.11")
+
+}
+
+tasks.withType(PublishToMavenRepository).configureEach { enabled = false }
+tasks.withType(PublishToMavenLocal).configureEach { enabled = false }
+
+test {
+    useJUnitPlatform()
+}

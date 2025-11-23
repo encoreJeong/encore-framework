@@ -1,18 +1,99 @@
 plugins {
-    id 'java'
+    id 'java-library'
+    id 'maven-publish'
+    id 'org.jreleaser' version '1.21.0'
 }
 
-group = 'org.encoreframework'
-version = '1.0-SNAPSHOT'
+group = 'io.github.encorejeong'
+version = '0.1.1'
+
+java {
+    withSourcesJar()
+    withJavadocJar()
+}
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    testImplementation platform('org.junit:junit-bom:5.10.0')
-    testImplementation 'org.junit.jupiter:junit-jupiter'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    api 'jakarta.servlet:jakarta.servlet-api:6.0.0'
+
+    implementation('com.fasterxml.jackson.core:jackson-databind:2.17.0')
+
+    api('org.slf4j:slf4j-api:2.0.12')
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            groupId = 'io.github.encorejeong'
+            artifactId = 'encore-framework'
+            version = project.version
+
+            from components.java
+
+            pom {
+                name = "encore-framework"
+                description = "A lightweight HTTP front controller & MVC framework for Java web applications."
+                inceptionYear = "2025"
+                url = "https://github.com/encorejeong/encore-framework"
+
+                licenses {
+                    license {
+                        name = "The Apache License, Version 2.0"
+                        url = "http://www.apache.org/licenses/LICENSE-2.0.txt"
+                        distribution = "repo"
+                    }
+                }
+
+                developers {
+                    developer {
+                        id = "encorejeong"
+                        name = "JaeYeon Jeong"
+                        email = "zzaibean@gmail.com"
+                        url = "https://github.com/encorejeong"
+                    }
+                }
+
+                scm {
+                    url = "https://github.com/encorejeong/encore-framework"
+                    connection = "scm:git:https://github.com/encorejeong/encore-framework.git"
+                    developerConnection = "scm:git:ssh://git@github.com/encorejeong/encore-framework.git"
+                }
+            }
+        }
+    }
+
+    repositories {
+        maven {
+            url = layout.buildDirectory.dir('staging-deploy')
+        }
+    }
+}
+
+jreleaser {
+    project {
+        name = 'encore-framework'
+        description = 'A lightweight HTTP front controller & MVC framework for Java web applications.'
+        website = 'https://github.com/encorejeong/encore-framework'
+    }
+    signing {
+        active = 'ALWAYS'
+        armored = true
+    }
+    deploy {
+        maven {
+            mavenCentral {
+                sonatype {
+                    active = 'ALWAYS'
+                    url = 'https://central.sonatype.com/api/v1/publisher'
+                    stagingRepository('build/staging-deploy')
+                }
+            }
+        }
+    }
 }
 
 test {
